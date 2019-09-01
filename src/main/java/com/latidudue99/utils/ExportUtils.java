@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class ExportUtils {
             DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private static DateTimeFormatter formatterOut =
             DateTimeFormatter.ofPattern("dd MMM yyyy HH.mm");
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
 
     public static boolean exportSalesCSVShort(String[] args, List<Publication> publications, String filename) {
         boolean isDone = false;
@@ -69,6 +71,18 @@ public class ExportUtils {
 
             sb.append(System.lineSeparator());
         }
+        sb.append(System.lineSeparator());
+        sb.append("Total sales value: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.VALUE_SOLD)));
+        sb.append(System.lineSeparator());
+        sb.append("Total cost value: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.VALUE_COST)));
+        sb.append(System.lineSeparator());
+        sb.append("Total gross profit: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.GROSS_PROFIT)));
+        sb.append(System.lineSeparator());
+        sb.append("Total margin: £"
+                + Calculator.getTotals(publications).get(Totals.MARGIN).intValue() + " %");
 
         try (FileWriter fw = new FileWriter(filename);
              BufferedWriter bw = new BufferedWriter(fw)) {
@@ -174,6 +188,11 @@ public class ExportUtils {
             sb.append(p.getWeeks().get("year-1") + ", ");
             sb.append(p.getWeeks().get("year-2") + ", ");
             sb.append(System.lineSeparator());
+            sb.append(System.lineSeparator());
+            sb.append("Total sales value: "
+                    + Calculator.getTotals(publications).get(Totals.VALUE_SOLD));
+            sb.append("Total cost value: "
+                    + Calculator.getTotals(publications).get(Totals.VALUE_COST));
         }
         BufferedWriter bw = null;
         FileWriter fw = null;
