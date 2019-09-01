@@ -9,4 +9,5 @@ Work in progress
 
 # License
 
-No limitations for using 
+GNU General Public License v3.0.
+See the LICENSE file for the full license text.
