@@ -18,7 +18,7 @@ public class App {
 
             publications = Filters.filerPublications(publications, args);
 
-            ExportUtils.exportSalesCSVShort(args, publications, inputName);
+            ExportUtils.exportSalesCSVShortTrimmed(args, publications, inputName);
         }
 
     }

@@ -23,6 +23,87 @@ public class ExportUtils {
             DateTimeFormatter.ofPattern("dd MMM yyyy HH.mm");
     private static DecimalFormat df2 = new DecimalFormat("#.##");
 
+    public static boolean exportSalesCSVShortTrimmed(String[] args, List<Publication> publications,
+                                                        String filename) {
+        boolean isDone = false;
+        filename = addCriteriaToFilename(args, filename);
+        filename =  addDateToFilename(filename)+ ".csv";
+
+        StringBuilder sb =  new StringBuilder();
+        String headers = "" +         // column headers
+                " ISBN" +
+                ", QTY SOLD (RANGE) " +
+                ", QTY IN HAND" +
+                ", QTY ON ORDER" +
+                ", TITLE" +
+                ", AUTHOR" +
+                ", PUBLISHER" +
+                ", PRICE" +
+                ", SPECIAL PRICE" +
+                ", COST" +
+                ", SALES VALUE (RANGE)" +
+                ", IP/OP etc" +
+                ", DEPT";
+        ;
+        sb.append(headers);
+        sb.append(System.lineSeparator());
+        sb.append(System.lineSeparator());
+
+        if(args.length > 3)
+            System.out.print("Filtering publications by " + args[2] + ": " + args[3] + "...");
+
+        for(Publication p :publications){
+            sb.append(" ");
+            sb.append(p.getIsbn() + ", ");
+            sb.append(p.getQuantitySoldDateRange() + ", ");
+            sb.append(p.getQuantityInHand() + ", ");
+            sb.append(p.getQuantityOrdered() + ", ");
+            if(p.getTitle().length() > 40)
+                sb.append("\"" + p.getTitle().substring(0,40) + "\"" + "..., ");
+            else
+                sb.append("\"" + p.getTitle() + "\"" + ", ");
+            if(p.getAuthor().length() > 20)
+                sb.append("\"" + p.getAuthor().substring(0,20) + "\"" + "..., ");
+            else
+                sb.append("\"" + p.getAuthor() + "\"" + ", ");
+            if(p.getPublisher().length() > 20)
+                sb.append("\"" + p.getPublisher().substring(0,15) + "\"" + "..., ");
+            else
+                sb.append("\"" + p.getPublisher() + "\"" + ", ");
+            sb.append(p.getPrice() + ", ");
+            sb.append(p.getSpecialPrice() + ", ");
+            sb.append(p.getCost() + ", ");
+            sb.append(p.getSalesValueDateRange() + ", ");
+            sb.append(p.getReport() + ", ");
+            sb.append(p.getDepartment() + ", ");
+
+            sb.append(System.lineSeparator());
+        }
+        sb.append(System.lineSeparator());
+        sb.append("Total sales value: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.VALUE_SOLD)));
+        sb.append(System.lineSeparator());
+        sb.append("Total cost value: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.VALUE_COST)));
+        sb.append(System.lineSeparator());
+        sb.append("Total gross profit: £"
+                + df2.format(Calculator.getTotals(publications).get(Totals.GROSS_PROFIT)));
+        sb.append(System.lineSeparator());
+        sb.append("Total margin: £"
+                + Calculator.getTotals(publications).get(Totals.MARGIN).intValue() + " %");
+
+        try (FileWriter fw = new FileWriter(filename);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+
+            bw.write(sb.toString());
+            isDone = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("  OK");
+        return isDone;
+    }
+
     public static boolean exportSalesCSVShort(String[] args, List<Publication> publications, String filename) {
         boolean isDone = false;
         filename = addCriteriaToFilename(args, filename);
